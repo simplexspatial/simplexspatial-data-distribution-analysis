@@ -1,0 +1,219 @@
+﻿{
+  "paragraphs": [
+    {
+      "text": "%spark\nvar df = spark.read.orc(\"/zeppelin/data/nodeId\")\ndf.createOrReplaceTempView(\"partitioningByID\")\n\n",
+      "user": "anonymous",
+      "dateUpdated": "2020-05-10T14:52:18+0000",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala",
+        "editorHide": true,
+        "tableHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\u001b[1m\u001b[34mdf\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.DataFrame\u001b[0m = [partition: bigint, maxId: bigint ... 2 more fields]\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1589120114809_-383359878",
+      "id": "paragraph_1589120114809_-383359878",
+      "dateCreated": "2020-05-10T14:15:14+0000",
+      "dateStarted": "2020-05-10T14:47:19+0000",
+      "dateFinished": "2020-05-10T14:47:19+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:178"
+    },
+    {
+      "text": "%spark.sql\n\nselect partition, ids, ((ids*2)*4)/1024/1024 as Mbytes from partitioningByID\n",
+      "user": "anonymous",
+      "dateUpdated": "2020-05-10T15:00:52+0000",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {
+          "0": {
+            "graph": {
+              "mode": "lineChart",
+              "height": 300,
+              "optionOpen": false,
+              "setting": {
+                "table": {
+                  "tableGridState": {},
+                  "tableColumnTypeState": {
+                    "names": {
+                      "partition": "string",
+                      "((CAST(((ids * CAST(2 AS BIGINT)) * CAST(4 AS BIGINT)) AS DOUBLE) / CAST(1024 AS DOUBLE)) / CAST(1024 AS DOUBLE))": "string"
+                    },
+                    "updated": false
+                  },
+                  "tableOptionSpecHash": "[{\"name\":\"useFilter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable filter for columns\"},{\"name\":\"showPagination\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable pagination for better navigation\"},{\"name\":\"showAggregationFooter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable a footer for displaying aggregated values\"}]",
+                  "tableOptionValue": {
+                    "useFilter": false,
+                    "showPagination": false,
+                    "showAggregationFooter": false
+                  },
+                  "updated": false,
+                  "initialized": false
+                },
+                "multiBarChart": {
+                  "rotate": {
+                    "degree": "-45"
+                  },
+                  "xLabelStatus": "default"
+                },
+                "lineChart": {
+                  "rotate": {
+                    "degree": "-45"
+                  },
+                  "xLabelStatus": "default",
+                  "lineWithFocus": false
+                },
+                "stackedAreaChart": {
+                  "rotate": {
+                    "degree": "-45"
+                  },
+                  "xLabelStatus": "default"
+                }
+              },
+              "commonSetting": {},
+              "keys": [
+                {
+                  "name": "partition",
+                  "index": 0,
+                  "aggr": "sum"
+                }
+              ],
+              "groups": [],
+              "values": [
+                {
+                  "name": "ids",
+                  "index": 1,
+                  "aggr": "sum"
+                }
+              ]
+            },
+            "helium": {}
+          }
+        },
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/sql",
+        "title": true,
+        "editorHide": true,
+        "tableHide": false
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TABLE",
+            "data": "partition\tids\tMbytes\n88\t58183305\t443.9033889770508\n28\t58339109\t445.09207916259766\n33\t58404166\t445.5884246826172\n30\t58348788\t445.1659240722656\n42\t58227883\t444.24349212646484\n73\t58149546\t443.6458282470703\n45\t58186069\t443.92447662353516\n47\t58162387\t443.7437973022461\n53\t58125637\t443.46341705322266\n36\t58321235\t444.9557113647461\n75\t58123419\t443.44649505615234\n48\t58152079\t443.66515350341797\n67\t58230037\t444.25992584228516\n15\t58188873\t443.9458694458008\n81\t58060516\t442.9665832519531\n6\t58322101\t444.96231842041016\n68\t58211818\t444.1209259033203\n38\t58290405\t444.72049713134766\n82\t58047502\t442.86729431152344\n98\t58409570\t445.62965393066406\n39\t58269914\t444.5641632080078\n94\t58536791\t446.6002731323242\n50\t58129000\t443.48907470703125\n7\t58303823\t444.82286834716797\n77\t58098697\t443.2578811645508\n16\t58172723\t443.8226547241211\n64\t58276183\t444.6119918823242\n17\t58161456\t443.7366943359375\n79\t58079997\t443.1152114868164\n20\t58121877\t443.43473052978516\n70\t58183116\t443.9019470214844\n92\t58413834\t445.6621856689453\n4\t58357210\t445.2301788330078\n8\t58283588\t444.6684875488281\n62\t58321057\t444.95435333251953\n51\t58115868\t443.3888854980469\n56\t58081228\t443.1246032714844\n27\t58363328\t445.27685546875\n63\t58291716\t444.7304992675781\n32\t58312871\t444.8918991088867\n43\t58214612\t444.1422424316406\n87\t58225787\t444.22750091552734\n72\t58154790\t443.6858367919922\n26\t58386370\t445.45265197753906\n29\t58371836\t445.3417663574219\n11\t58239170\t444.32960510253906\n49\t58140534\t443.5770721435547\n19\t58139513\t443.5692825317383\n54\t58108114\t443.32972717285156\n90\t58508822\t446.3868865966797\n95\t58494548\t446.2779846191406\n65\t58255245\t444.4522476196289\n66\t58243675\t444.36397552490234\n80\t58069427\t443.0345687866211\n71\t58173140\t443.8258361816406\n74\t58138748\t443.5634460449219\n89\t58567427\t446.8340072631836\n83\t58033020\t442.7568054199219\n93\t58595228\t447.0461120605469\n85\t58450024\t445.93829345703125\n97\t58434196\t445.8175354003906\n69\t58198523\t444.01949310302734\n96\t58465072\t446.0531005859375\n91\t58451075\t445.9463119506836\n86\t58297482\t444.7744903564453\n78\t58093372\t443.2172546386719\n84\t58024731\t442.69356536865234\n99\t58386592\t445.454345703125\n76\t58111546\t443.3559112548828\n1\t58442015\t445.87718963623047\n31\t58332124\t445.0387878417969\n52\t58104193\t443.29981231689453\n24\t58373389\t445.3536148071289\n61\t58345781\t445.14298248291016\n37\t58305561\t444.8361282348633\n44\t58202518\t444.0499725341797\n57\t58233715\t444.2879867553711\n9\t58274055\t444.5957565307617\n58\t58212177\t444.12366485595703\n55\t58096606\t443.24192810058594\n46\t58178726\t443.8684539794922\n34\t58367487\t445.30858612060547\n40\t58255984\t444.4578857421875\n3\t58383069\t445.4274673461914\n5\t58338509\t445.0875015258789\n60\t58181433\t443.8891067504883\n59\t58194965\t443.99234771728516\n35\t58345568\t445.141357421875\n41\t58243184\t444.3602294921875\n22\t58479544\t446.16351318359375\n25\t58424443\t445.74312591552734\n21\t58581631\t446.94237518310547\n12\t58228874\t444.2510528564453\n23\t58415837\t445.6774673461914\n14\t58198372\t444.0183410644531\n13\t58210832\t444.1134033203125\n18\t58145953\t443.61841583251953\n0\t58366082\t445.29786682128906\n10\t58252292\t444.4297180175781\n2\t58405733\t445.60037994384766\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://7af51ea83f6e:4040/jobs/job?id=26",
+              "$$hashKey": "object:8672"
+            },
+            {
+              "jobUrl": "http://7af51ea83f6e:4040/jobs/job?id=27",
+              "$$hashKey": "object:8673"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1589120803014_-745644571",
+      "id": "paragraph_1589120803014_-745644571",
+      "dateCreated": "2020-05-10T14:26:43+0000",
+      "dateStarted": "2020-05-10T15:00:52+0000",
+      "dateFinished": "2020-05-10T15:00:52+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:179",
+      "title": "Distribution  per NodeId (100 partitions)"
+    },
+    {
+      "text": "%spark.sql\n",
+      "user": "anonymous",
+      "dateUpdated": "2020-05-10T15:00:52+0000",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/sql"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1589122852299_1488577789",
+      "id": "paragraph_1589122852299_1488577789",
+      "dateCreated": "2020-05-10T15:00:52+0000",
+      "status": "READY",
+      "focus": true,
+      "$$hashKey": "object:8572"
+    }
+  ],
+  "name": "OSMDataDistribution",
+  "id": "2F7XYW952",
+  "defaultInterpreterGroup": "spark",
+  "version": "0.9.0-preview1",
+  "noteParams": {},
+  "noteForms": {},
+  "angularObjects": {},
+  "config": {
+    "isZeppelinNotebookCronEnable": false,
+    "looknfeel": "default",
+    "personalizedMode": "false"
+  },
+  "info": {},
+  "path": "/OSMDataDistribution"
+}

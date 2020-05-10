@@ -17,91 +17,28 @@
 
 package com.simplexportal.simplexspatial.analysis
 
+import com.simplexportal.simplexspatial.analysis.AppConfig._
+import com.simplexportal.simplexspatial.analysis.NodeIdDistribution._
+import org.apache.spark.sql.SparkSession
 import org.apache.spark.{SparkConf, SparkContext}
 
 object Driver {
-
-  trait Command {
-    def id: String
-  }
-  trait Partitioner
-
-  object NoneCmd extends Command {
-    override def id: String = ""
-  }
-  object MOD extends Command with Partitioner {
-    override def id: String = "mod"
-  }
-  object TILE extends Command with Partitioner {
-    override def id: String = "tile"
-  }
-  object EXTRACT extends Command {
-    override def id: String = "extract"
-  }
-
-  case class AppConfig(
-      cmd: Command = NoneCmd,
-      input: String = "",
-      output: String = "",
-      modPartitions: Long = 0,
-      latPartitions: Long = 0,
-      lonPartitions: Long = 0
-  )
-
-  val parser = new scopt.OptionParser[AppConfig]("osm-data-distribution") {
-    head("osm-data-distribution")
-
-    opt[String]("osm")
-      .abbr("i")
-      .required()
-      .text("OSM file path")
-      .action((v, cfg) => cfg.copy(input = v))
-
-    opt[String]("outputFolder")
-      .abbr("o")
-      .required()
-      .text("Output folder path")
-      .action((v, cfg) => cfg.copy(output = v))
-
-    cmd(EXTRACT.id)
-      .action((_, cfg) => cfg.copy(cmd = EXTRACT))
-      .text("Extract blobs from osm pbf file")
-    cmd(MOD.id)
-      .action((_, cfg) => cfg.copy(cmd = MOD))
-      .text("Calculate distribution using a module of the node id as partitioner.")
-      .children(
-        opt[Long]("partitions")
-          .abbr("p")
-          .required()
-          .action((v, args) => args.copy(modPartitions = v))
-      )
-    cmd(TILE.id)
-      .action((_, cfg) => cfg.copy(cmd = TILE))
-      .text("Calculate distribution partitioning data by Tile")
-      .children(
-        opt[Long]("latPartitions")
-          .abbr("latP")
-          .required()
-          .action((v, cfg) => cfg.copy(latPartitions = v)),
-        opt[Long]("lonPartitions")
-          .abbr("lonP")
-          .required()
-          .action((v, cfg) => cfg.copy(lonPartitions = v))
-      )
-    checkConfig {
-      case cfg: AppConfig if cfg.cmd == "" => failure("partitioner not present.")
-      case _                               => success
-    }
-  }
 
   def main(args: Array[String]): Unit = {
     parser.parse(args, AppConfig()) match {
       case Some(cfg) =>
         val conf = new SparkConf().setAppName("Data distribution")
-        implicit val sparkContext = new SparkContext(conf)
+        implicit val spark = SparkSession
+          .builder()
+          .appName("Data distribution")
+          .config(conf)
+          .getOrCreate()
+        implicit val sparkContext = spark.sparkContext
 
         cfg.cmd match {
-          case p: Partitioner => ???
+          case MOD =>
+            NodeIdDistribution
+              .run(cfg.input, cfg.output, cfg.modPartitions)
           case EXTRACT =>
             println(s"Extracted ${BlocksExtraction.extractBlobs(cfg.input, cfg.output)} blocks")
           case x =>
@@ -109,12 +46,6 @@ object Driver {
             System.exit(-2)
         }
 
-      //        val partitioner = cfg.cmd match {
-      //          case Commands.MOD =>
-      //            Distribution.modPartitioner(cfg.modPartitions)
-      //          case Commands.TILE =>
-      //            Distribution.tilePartitioner(cfg.latPartitions, cfg.lonPartitions)
-      //        }
       case None => System.exit(-1)
     }
 

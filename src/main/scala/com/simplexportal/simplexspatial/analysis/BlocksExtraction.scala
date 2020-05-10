@@ -26,13 +26,15 @@
 package com.simplexportal.simplexspatial.analysis
 
 import com.acervera.osm4scala.BlobTupleIterator
-import com.simplexportal.simplexspatial.analysis.Distribution.logger
 import io.tmos.arm.ArmMethods.manage
 import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.spark.SparkContext
 import org.openstreetmap.osmosis.osmbinary.fileformat.Blob
+import org.slf4j.LoggerFactory
 
 object BlocksExtraction {
+
+  val logger = LoggerFactory.getLogger(BlocksExtraction.getClass.getName)
 
   def extractBlobs(input: String, output: String)(
       implicit ctx: SparkContext

@@ -18,45 +18,40 @@
 package com.simplexportal.simplexspatial.analysis
 
 import com.acervera.osm4scala.model.{NodeEntity, OSMEntity, WayEntity}
+import org.apache.spark.sql.Row
 import org.scalatest.matchers.should.Matchers
 
 import scala.util.Random
 
-class DistributionSpec
+class NodeIdDistributionSpec
     extends org.scalatest.wordspec.AnyWordSpecLike
     with Matchers
-    with SparkBaseRDDTesting {
+    with SparkBaseSQLTesting {
   "Calculate distribution" should {
     "correctly" in {
 
-      val randomData: Seq[OSMEntity] = (1 to 200).map(id =>
-        NodeEntity(id, Random.nextDouble() % 90, Random.nextDouble() % 180, Map.empty)
-      ) ++ (1000 to 1010)
-        .map(id => WayEntity(id, (1L to 10L).map(_ % 200), Map.empty))
+      import NodeIdDistribution._
+      import sparkSession.implicits._
 
-      import Distribution._
+      val data = Seq(
+        NodeEntity(10, 10.1, -10.1, Map.empty),
+        NodeEntity(20, 20.1, -10.1, Map.empty),
+        NodeEntity(30, 30.1, -10.1, Map.empty),
+        NodeEntity(11, 11.1, -10.1, Map.empty),
+        NodeEntity(21, 21.1, -10.1, Map.empty),
+        NodeEntity(32, 32.1, -10.1, Map.empty),
+        WayEntity(100, Seq(10, 20, 30), Map.empty)
+      )
 
-      val result = sparkContext
-        .makeRDD(
-          randomData,
-          2
-        )
-        .distribution(
-          Distribution.modPartitioner(10)
-        )
+      val result = sparkSession
+        .createDataset(data.flatMap(NodeIdDistribution.extractor(10)(_)))
+        .distribution
 
-      result.collect().toSet shouldBe (
+      result.sort($"partition".asc).collect().toSet shouldBe (
         Set(
-          (0, Metrics(190, 100, 20)),
-          (1, Metrics(181, 101, 20)),
-          (2, Metrics(182, 102, 20)),
-          (3, Metrics(183, 103, 20)),
-          (4, Metrics(184, 104, 20)),
-          (5, Metrics(185, 105, 20)),
-          (6, Metrics(186, 96, 20)),
-          (7, Metrics(187, 97, 20)),
-          (8, Metrics(188, 98, 20)),
-          (9, Metrics(189, 99, 20))
+          Row(0, 30, 10, 3),
+          Row(1, 21, 11, 2),
+          Row(2, 32, 32, 1)
         )
       )
     }
