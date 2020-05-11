@@ -18,9 +18,8 @@
 package com.simplexportal.simplexspatial.analysis
 
 import com.simplexportal.simplexspatial.analysis.AppConfig._
-import com.simplexportal.simplexspatial.analysis.NodeIdDistribution._
+import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
-import org.apache.spark.{SparkConf, SparkContext}
 
 object Driver {
 
@@ -39,6 +38,9 @@ object Driver {
           case MOD =>
             NodeIdDistribution
               .run(cfg.input, cfg.output, cfg.modPartitions)
+          case AppConfig.TILE =>
+            TileDistribution
+              .run(cfg.input, cfg.output, cfg.latPartitions, cfg.lonPartitions)
           case EXTRACT =>
             println(s"Extracted ${BlocksExtraction.extractBlobs(cfg.input, cfg.output)} blocks")
           case x =>

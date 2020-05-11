@@ -21,35 +21,34 @@ import com.acervera.osm4scala.model.{NodeEntity, WayEntity}
 import org.apache.spark.sql.Row
 import org.scalatest.matchers.should.Matchers
 
-class NodeIdDistributionSpec
+class TileDistributionSpec
     extends org.scalatest.wordspec.AnyWordSpecLike
     with Matchers
     with SparkBaseSQLTesting {
-  "Calculate mod of id distribution" should {
+  "Calculate Tile distribution" should {
     "correctly" in {
 
-      import NodeIdDistribution._
+      import TileDistribution._
       import sparkSession.implicits._
 
       val data = Seq(
-        NodeEntity(10, 10.1, -10.1, Map.empty),
-        NodeEntity(20, 20.1, -10.1, Map.empty),
-        NodeEntity(30, 30.1, -10.1, Map.empty),
-        NodeEntity(11, 11.1, -10.1, Map.empty),
-        NodeEntity(21, 21.1, -10.1, Map.empty),
-        NodeEntity(32, 32.1, -10.1, Map.empty),
+        NodeEntity(10, -10.1, -10.1, Map.empty),
+        NodeEntity(20, -20.1, -10.1, Map.empty),
+        NodeEntity(30, -30.1, -10.1, Map.empty),
+        NodeEntity(11, -11.1, -10.1, Map.empty),
+        NodeEntity(21, 21.1, 10.1, Map.empty),
+        NodeEntity(32, 32.1, 10.1, Map.empty),
         WayEntity(100, Seq(10, 20, 30), Map.empty)
       )
 
       val result = sparkSession
-        .createDataset(data.flatMap(NodeIdDistribution.extractor(10)(_)))
+        .createDataset(data.flatMap(TileDistribution.extractor(2, 2)(_)))
         .distribution
 
       result.collect().toSet shouldBe (
         Set(
-          Row(0, 30, 10, 3),
-          Row(1, 21, 11, 2),
-          Row(2, 32, 32, 1)
+          Row(0, 0, 30, 10, 4),
+          Row(1, 1, 32, 21, 2)
         )
       )
     }

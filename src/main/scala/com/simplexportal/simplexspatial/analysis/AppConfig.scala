@@ -17,16 +17,15 @@
 
 package com.simplexportal.simplexspatial.analysis
 
-import com.acervera.osm4scala.model.OSMEntity
 import com.simplexportal.simplexspatial.analysis.AppConfig.{Command, NoneCmd}
 
 case class AppConfig(
     cmd: Command = NoneCmd,
     input: String = "",
     output: String = "",
-    modPartitions: Long = 0,
-    latPartitions: Long = 0,
-    lonPartitions: Long = 0
+    modPartitions: Int = 0,
+    latPartitions: Int = 0,
+    lonPartitions: Int = 0
 )
 
 object AppConfig {
@@ -65,28 +64,31 @@ object AppConfig {
     cmd(EXTRACT.id)
       .action((_, cfg) => cfg.copy(cmd = EXTRACT))
       .text("Extract blobs from osm pbf file")
+
     cmd(MOD.id)
       .action((_, cfg) => cfg.copy(cmd = MOD))
       .text("Calculate distribution using a module of the node id as partitioner.")
       .children(
-        opt[Long]("partitions")
+        opt[Int]("partitions")
           .abbr("p")
           .required()
           .action((v, args) => args.copy(modPartitions = v))
       )
+
     cmd(TILE.id)
       .action((_, cfg) => cfg.copy(cmd = TILE))
       .text("Calculate distribution partitioning data by Tile")
       .children(
-        opt[Long]("latPartitions")
+        opt[Int]("latPartitions")
           .abbr("latP")
           .required()
           .action((v, cfg) => cfg.copy(latPartitions = v)),
-        opt[Long]("lonPartitions")
+        opt[Int]("lonPartitions")
           .abbr("lonP")
           .required()
           .action((v, cfg) => cfg.copy(lonPartitions = v))
       )
+
     checkConfig {
       case cfg: AppConfig if cfg.cmd == "" => failure("partitioner not present.")
       case _                               => success
